@@ -108,16 +108,33 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return userDrinkki;
     }
 
+    public void addUser(UserDrinkki user){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERDRINKKI_NAME, user.getName());
+        values.put(COLUMN_USERDRINKKI_GENDER,user.getGender());
+        values.put(COLUMN_USERDRINKKI_WEIGHT, user.getWeight());
+        values.put(COLUMN_USERDRINKKI_WATERNEEDED,user.getWaterNeeded());
+
+        long rowId = db.insert(TABLE_USERDRINKKI,null,values);
+        db.close();
+    }
     public void addDrunkTime(DrunkTime drunkTime){
+        Log.i(TAG,"DrinkkiDb.add..." + drunkTime.getDrunkWater());
         SQLiteDatabase db = this.getWritableDatabase();
         String dateString = MainActivity.simpleDateFormat.format(drunkTime.getDrunkDate());
         ContentValues values = new ContentValues();
-        values.put(COLUMN_DRUNKTIME_ID, drunkTime.getId());
         values.put(COLUMN_DRUNKTIME_DATE, dateString);
         values.put(COLUMN_DRUNKTIME_DRUNKWATER, drunkTime.getDrunkWater());
 
         long rowId = db.insert(TABLE_DRUNKTIME,null,values);
         db.close();
     }
-    
+
+    public double getAllWaterDrunkToday(){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+    }
+
+
 }
