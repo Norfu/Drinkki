@@ -1,5 +1,6 @@
 package services;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,11 +10,9 @@ import android.util.Log;
 import com.estiam.drinkki.MainActivity;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
-import Models.DrunkDay;
+import Models.DrunkTime;
 import Models.UserDrinkki;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
@@ -27,10 +26,10 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private final static String COLUMN_USERDRINKKI_GENDER = "GENDER";
     private final static String COLUMN_USERDRINKKI_WEIGHT = "WEIGHT";
     private final static String COLUMN_USERDRINKKI_WATERNEEDED = "WATER_NEEDED";
-    private final static String TABLE_DRUNKDAY = "DrunkDay";
-    private final static String COLUMN_DRUNKDAY_ID="ID";
-    private final static String COLUMN_DRUNKDAY_DATE = "DRUNKDATE";
-    private final static String COLUMN_DRUNKDAY_DRUNKWATER="DRUNKWATER";
+    private final static String TABLE_DRUNKTIME = "DrunkTime";
+    private final static String COLUMN_DRUNKTIME_ID="ID";
+    private final static String COLUMN_DRUNKTIME_DATE = "DRUNKDATE";
+    private final static String COLUMN_DRUNKTIME_DRUNKWATER="DRUNKWATER";
 
     public MyDatabaseHelper(Context context){
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
@@ -43,8 +42,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         String script = "CREATE TABLE ".concat(TABLE_USERDRINKKI + "("
         + COLUMN_USERDRINKKI_ID+" INTEGER PRIMARY KEY,"+ COLUMN_USERDRINKKI_NAME +" TEXT,"
         + COLUMN_USERDRINKKI_GENDER +" TEXT,"+ COLUMN_USERDRINKKI_WATERNEEDED+" REAL);")
-        +"CREATE TABLE ".concat(TABLE_DRUNKDAY+ "(" + COLUMN_DRUNKDAY_ID+ " INTEGER PRIMARY KEY,"
-        + COLUMN_DRUNKDAY_DATE + " TEXT," + COLUMN_DRUNKDAY_DRUNKWATER +" REAL);");
+        +"CREATE TABLE ".concat(TABLE_DRUNKTIME+ "(" + COLUMN_DRUNKTIME_ID+ " INTEGER PRIMARY KEY,"
+        + COLUMN_DRUNKTIME_DATE + " TEXT," + COLUMN_DRUNKTIME_DRUNKWATER +" REAL);");
 
         sqLiteDatabase.execSQL(script);
 
@@ -57,7 +56,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         //TODO ??
     }
 
-    public DrunkDay GetDrunkDay(Date date) throws ParseException {
+
+    //TODO METHODE A MODIFIER VOIR SUPPRIMER
+    public DrunkTime getLastDrunkTime(Date date) throws ParseException {
         String dateString = MainActivity.simpleDateFormat.format(date);
 
         Log.i(TAG,"DrinkkiDb.GetDrunkDay..."+ dateString);
@@ -73,19 +74,19 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null
         );
-        DrunkDay drunkDay = null;
+        DrunkTime drunkDay = null;
         while(cursor.moveToNext()){
             int itemId = cursor.getInt(cursor.getColumnIndexOrThrow("ID"));
             String itemDate = cursor.getString(cursor.getColumnIndexOrThrow("DRUNKDATE"));
             double itemDrunkWater = cursor.getDouble(cursor.getColumnIndexOrThrow("DRUNKWATER"));
        Date dateParse = MainActivity.simpleDateFormat.parse(itemDate);
-        drunkDay = new DrunkDay(itemId,dateParse,itemDrunkWater);
+        drunkDay = new DrunkTime(itemId,dateParse,itemDrunkWater);
         }
         cursor.close();
         return drunkDay;
     }
 
-    public UserDrinkki GetUser(){
+    public UserDrinkki getUser(){
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
@@ -107,8 +108,16 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return userDrinkki;
     }
 
-    public void AddWater(double value){
-        SQLiteDatabase db = this.getReadableDatabase();
-        
+    public void addDrunkTime(DrunkTime drunkTime){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String dateString = MainActivity.simpleDateFormat.format(drunkTime.getDrunkDate());
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_DRUNKTIME_ID, drunkTime.getId());
+        values.put(COLUMN_DRUNKTIME_DATE, dateString);
+        values.put(COLUMN_DRUNKTIME_DRUNKWATER, drunkTime.getDrunkWater());
+
+        long rowId = db.insert(TABLE_DRUNKTIME,null,values);
+        db.close();
     }
+    
 }

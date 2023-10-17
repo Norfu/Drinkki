@@ -2,12 +2,12 @@ package Models;
 
 import java.util.Date;
 
-public class DrunkDay {
+public class DrunkTime {
     private int Id;
     private Date DrunkDate;
     private double DrunkWater;
 
-    public DrunkDay(int id, Date drunkDate, double drunkWater) {
+    public DrunkTime(int id, Date drunkDate, double drunkWater) {
         Id = id;
         DrunkDate = drunkDate;
         DrunkWater = drunkWater;

@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 
 public class MainActivity extends AppCompatActivity {
 
-   public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd");
+   public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
